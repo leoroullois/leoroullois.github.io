@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <title>Chess BOT</title>
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/boards/green/150.png" as="image" />
+    <!-- pion blanc -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" as="image" />
+    <!-- cavalier blanc -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" as="image" />
+    <!-- fou blanc -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png" as="image" />
+    <!-- tour blanche -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png" as="image" />
+    <!-- dame blanche -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png" as="image" />
+    <!-- roi blanc -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png" as="image" />
+    <!-- pion noir -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" as="image" />
+    <!-- cavalier noir -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png" as="image" />
+    <!-- fou noir -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png" as="image" />
+    <!-- tour noir -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png" as="image" />
+    <!-- dame noir -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png" as="image" />
+    <!-- roi noir -->
+    <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png" as="image" />
+</head>
+<body>
+    <img src="image1" alt="">
+    <h1>Chess Bot</h1>
+    <table>
+        <tbody id="chess-board">
+            <tr class="row-0">
+                <td></td>
+                <th class="t-head">A</th>
+                <th class="t-head">B</th>
+                <th class="t-head">C</th>
+                <th class="t-head">D</th>
+                <th class="t-head">E</th>
+                <th class="t-head">F</th>
+                <th class="t-head">G</th>
+                <th class="t-head">H</th>
+            </tr>
+            <tr class="row-1">
+                <th class="column-A black" id="A1">
+                    <span class="num-row">1</span>
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png" alt="">
+                </th>
+                <th class="column-B white" id="B1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" alt="">
+
+                </th>
+                <th class="column-C black" id="C1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png" alt="">
+
+                </th>
+                <th class="column-D white" id="D1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png" alt="">
+
+                </th>
+                <th class="column-E black" id="E1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wk.png" alt="">
+
+                </th>
+                <th class="column-F white" id="F1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png" alt="">
+
+                </th>
+                <th class="column-G black" id="G1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wn.png" alt="">
+
+                </th>
+                <th class="column-H white" id="H1">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wr.png" alt="">
+
+                </th>
+            </tr>
+            <tr class="row-2">
+                <th class="column-A white" id="A2">
+                    <span class="num-row">2</span>
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-B black" id="B2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-C white" id="C2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-D black" id="D2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-E white" id="E2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-F black" id="F2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-G white" id="G2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+                <th class="column-H black" id="H2">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="">
+                </th>
+            </tr>
+            <tr class="row-3">
+                <th class="column-A black" id="A3">
+                    <span class="num-row">3</span>
+                </th>
+                <th class="column-B white" id="B3">
+
+                </th>
+                <th class="column-C black" id="C3">
+
+                </th>
+                <th class="column-D white" id="D3">
+
+                </th>
+                <th class="column-E black" id="E3">
+
+                </th>
+                <th class="column-F white" id="F3">
+
+                </th>
+                <th class="column-G black" id="G3">
+
+                </th>
+                <th class="column-H white" id="H3">
+
+                </th>
+            </tr>
+            <tr class="row-4">
+                <th class="column-A white" id="A4">
+                    <span class="num-row">4</span>
+                </th>
+                <th class="column-B black" id="B4">
+
+                </th>
+                <th class="column-C white" id="C4">
+
+                </th>
+                <th class="column-D black" id="D4">
+
+                </th>
+                <th class="column-E white" id="E4">
+
+                </th>
+                <th class="column-F black" id="F4">
+
+                </th>
+                <th class="column-G white" id="G4">
+
+                </th>
+                <th class="column-H black" id="H4">
+
+                </th>
+            </tr>
+            <tr class="row-5">
+                <th class="column-A black" id="A5">
+                    <span class="num-row" >5</span>
+                </th>
+                <th class="column-B white" id="B5">
+
+                </th>
+                <th class="column-C black" id="C5">
+
+                </th>
+                <th class="column-D white" id="D5">
+
+                </th>
+                <th class="column-E black" id="E5">
+
+                </th>
+                <th class="column-F white" id="F5">
+
+                </th>
+                <th class="column-G black" id="G5">
+
+                </th>
+                <th class="column-H white" id="H5">
+
+                </th>
+            </tr>
+            <tr class="row-6">
+                <th class="column-A white" id="A6">
+                    <span class="num-row">6</span>
+                </th>
+                <th class="column-B black" id="B6">
+
+                </th>
+                <th class="column-C white" id="C6">
+
+                </th>
+                <th class="column-D black" id="D6">
+
+                </th>
+                <th class="column-E white" id="E6">
+
+                </th>
+                <th class="column-F black" id="F6">
+
+                </th>
+                <th class="column-G white" id="G6">
+
+                </th>
+                <th class="column-H black" id="H6">
+
+                </th>
+            </tr>
+            <tr class="row-7">
+                <th class="column-A black" id="A7">
+                    <span class="num-row">7</span>
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-B white" id="B7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-C black" id="C7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-D white" id="D7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-E black" id="E7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-F white" id="F7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-G black" id="G7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+                <th class="column-H white" id="H7">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="">
+                </th>
+            </tr>
+            <tr class="row-8">
+                <th class="column-A white" id="A8">
+                    <span class="num-row">8</span>
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png" alt="">
+                </th>
+                <th class="column-B black" id="B8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png" alt="">
+                </th>
+                <th class="column-C white" id="C8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png" alt="">
+                </th>
+                <th class="column-D black" id="D8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png" alt="">
+                </th>
+                <th class="column-E white" id="E8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png" alt="">
+                </th>
+                <th class="column-F black" id="F8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bb.png" alt="">
+                </th>
+                <th class="column-G white" id="G8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bn.png" alt="">
+                </th>
+                <th class="column-H black" id="H8">
+                    <img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/br.png" alt="">
+                </th>
+            </tr>
+        </tbody>
+    </table>
+    <script src="main.js"></script>
+</body>
+</html>
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>test html</h1>
+    <p>discord</p>
+    
+</body>
+</html>

@@ -1,0 +1,56 @@
+:root {
+    --main-black: #0f0f0f;
+    --main-white: rgb(247, 247, 247);
+    --chess-black: #769656;
+    --chess-white: #eeeed2;
+}
+*, ::after, ::before {
+    box-sizing: border-box;
+}
+body {
+    margin:0;
+    padding:0;
+    background-color: var(--main-white);
+    color:var(--main-black);
+    font-family: 'Roboto', sans-serif;
+}
+h1 {
+    text-align: center;
+}
+#chess-board {
+    display: flex;
+    margin: auto;
+    height: 800px;
+    width: 800px;
+    border-collapse: collapse;
+}
+#chess-board .row td {
+    height: 100px;
+    width: 100px;
+    background-color: #fff;
+}
+#chess-board .row .black {
+    background-color: var(--chess-black);
+}
+#chess-board .row .white {
+    background-color: var(--chess-white);
+}
+#chess-board th {
+    height: 50px;
+    width: 50px;
+}
+#chess-board img {
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+    cursor: pointer;
+}
+.ball {
+    display: flex;
+    margin: auto;
+    height: 35%;
+    width: 35%;
+    background-color: var(--main-black);
+    opacity: .4;
+    border-radius: 50%;
+}
