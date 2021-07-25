@@ -33,30 +33,55 @@ class Pawn {
     getHTML() {
         return document.querySelector(`#${this._actualPos}`);
     }
-    possiblePos() {
-        let positions = [];
+    move() {
+        const id= this.id;
+        let myPawn;
+        // Sélectionnes le pion acutle parmis la liste des pions pawns;
+        for (let i=0;i<pawns.length;i++) {
+            if (pawns[i]._actualPos ==id) {
+                myPawn=pawns[i];
+            }
+        }
         let s;
-        if (this._color=="black") {
+        if (myPawn._color=="black") {
             s=1;
         } else {
             s=-1;
         }
-        const id= this.id;
-        const upPos = document.querySelector(`#${changePosition(id,0,1)}`);
-        const upUpPos = document.querySelector(`#${changePosition(id,0,2)}`);
+        const upPos = document.querySelector(`#${changePosition(id,0,s*1)}`);
+        const upUpPos = document.querySelector(`#${changePosition(id,0,s*2)}`);
+        // Nouvelles positions possibles;
+        let positions = [];
         if (!upPos.hasChildNodes()) {
             console.log(`Peut bouger en ${upPos.id}`);
             positions.push(upPos.id);
+            if (!upUpPos.hasChildNodes()) {
+                console.log(`Peut bouger en ${upUpPos.id}`);
+                positions.push(upUpPos.id);
+            }
         }
-        if (!upUpPos.hasChildNodes()) {
-            console.log(`Peut bouger en ${upUpPos.id}`);
-            positions.push(upUpPos.id);
+        // Affiche les boules pour indiquer les coups possibles;
+        displayBalls(positions)
+        // Ajoute les événements pour déplacer la pièce;
+        for (let i=0;i<positions.length;i++) {
+            document.querySelector(`#${positions[i]}`).addEventListener("click",()=> {
+                document.querySelector(`#${id}`).innerHTML="";
+                if(myPawn._color == "black") {
+                    document.querySelector(`#${positions[i]}`).innerHTML='<img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bp.png" alt="black pawn">';
+                    myPawn._actualPos = positions[i];
+                } else {
+                    document.querySelector(`#${positions[i]}`).innerHTML='<img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" alt="white pawn">';
+                    myPawn._actualPos = positions[i];
+                };
+                if(i==0) {
+                    console.log(document.querySelector(`#${positions[1]}`));
+                    document.querySelector(`#${positions[1]}`).innerHTML="";
+                } else if (i==1) {
+                    document.querySelector(`#${positions[0]}`).innerHTML="";
+                };
+                myPawn.getHTML().addEventListener("click",myPawn.move);
+            });
         }
-        return positions;
-    }
-    move() {
-        console.log(this.possiblePos());
-        displayBalls(this.possiblePos());
     }
 };
 class Knight {
@@ -133,5 +158,39 @@ const newGame = new ChessGame();
 // myPawn.addEventListener("click",() => {
 //     displayBalls(["#D3","#D4"]);
 // })
-let myPawn = new Pawn("black","D7");
-myPawn.getHTML().addEventListener("click",myPawn.move());
+const pa = new Pawn("black","A7");
+const pb = new Pawn("black","B7");
+const pc = new Pawn("black","C7");
+const pd = new Pawn("black","D7");
+const pe = new Pawn("black","E7");
+const pf = new Pawn("black","F7");
+const pg = new Pawn("black","G7");
+const ph = new Pawn("black","H7");
+
+const Pa = new Pawn("white","A2");
+const Pb = new Pawn("white","B2");
+const Pc = new Pawn("white","C2");
+const Pd = new Pawn("white","D2");
+const Pe = new Pawn("white","E2");
+const Pf = new Pawn("white","F2");
+const Pg = new Pawn("white","G2");
+const Ph = new Pawn("white","H2");
+const pawns = [pa,pb,pc,pd,pe,pf,pg,ph,Pa,Pb,Pc,Pd,Pe,Pf,Pg,Ph];
+
+pa.getHTML().addEventListener("click",pa.move);
+pb.getHTML().addEventListener("click",pb.move);
+pc.getHTML().addEventListener("click",pc.move);
+pd.getHTML().addEventListener("click",pd.move);
+pe.getHTML().addEventListener("click",pe.move);
+pf.getHTML().addEventListener("click",pf.move);
+pg.getHTML().addEventListener("click",pg.move);
+ph.getHTML().addEventListener("click",ph.move);
+
+Pa.getHTML().addEventListener("click",Pa.move);
+Pb.getHTML().addEventListener("click",Pb.move);
+Pc.getHTML().addEventListener("click",Pc.move);
+Pd.getHTML().addEventListener("click",Pd.move);
+Pe.getHTML().addEventListener("click",Pe.move);
+Pf.getHTML().addEventListener("click",Pf.move);
+Pg.getHTML().addEventListener("click",Pg.move);
+Ph.getHTML().addEventListener("click",Ph.move);
