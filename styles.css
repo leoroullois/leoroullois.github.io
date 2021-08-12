@@ -19,9 +19,8 @@ body {
 h1 {
     text-align: center;
 }
-p {
+h2 {
     text-align: center;
-    font-size: 1.4em;
 }
 #chess-board {
     display: flex;
@@ -61,4 +60,14 @@ p {
     background-color: var(--main-black);
     opacity: .4;
     border-radius: 50%;
+}
+@media screen and (max-width: 480px) {
+    #chess-board {
+        height: 400px;
+        width: 400px;
+    }
+    #chess-board .row td {
+        height: 50px;
+        width: 50px;
+    }
 }

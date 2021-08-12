@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-    <title>Chess Game</title>
     <!-- <link rel="preload" href="//images.chesscomfiles.com/chess-themes/boards/green/150.png" as="image" /> -->
     <!-- pion blanc -->
     <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wp.png" as="image" />
@@ -34,11 +33,13 @@
     <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png" as="image" />
     <!-- roi noir -->
     <link rel="preload" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bk.png" as="image" />
-    <title>Chess bot</title>
+
+    <link rel="icon" type="image/png" sizes="16x16" href="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png">
+    <title>Jeu d'échec</title>
 </head>
 <body>
     <!-- <h1>Chess Game</h1> -->
-    <p>Trait aux <span id="color">blancs</span>.</p>
+    <h2>Trait aux <span id="color">blancs</span>.</h2>
     <table id="chess-board">
         <tr>
             <td></td>
@@ -90,7 +91,7 @@
             <td id="B4" class="black"></td>
             <td id="C4" class="white"></td>
             <td id="D4" class="black"></td>
-            <td id="E4" class="white"></td>
+            <td id="E4" class="white"><img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wb.png" alt="white bishop"></td>
             <td id="F4" class="black"></td>
             <td id="G4" class="white"></td>
             <td id="H4" class="black"></td>
@@ -144,6 +145,8 @@
   src="https://code.jquery.com/jquery-3.6.0.js"
   integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
   crossorigin="anonymous"></script>
-    <script src="main.js"></script>
+    <script src="main.js" type="module"></script>
+    <script src="js/pawn.js" type="module"></script>
+    <script src="js/bishop.js" type="module"></script>
 </body>
 </html>
