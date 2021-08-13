@@ -1,6 +1,7 @@
 import * as bishop from "./js/bishop.js";
 import * as rook from "./js/rook.js";
 import * as queen from "./js/queen.js";
+import * as knight from "./js/knight.js";
 import * as pawn from "./js/pawn.js";
 const chessBoard = [
     ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
@@ -34,15 +35,141 @@ let x = [1];
 class Knight {
     constructor(color, actualPos) {
         this._color = color,
-            this._name = "Cavalier",
+            this._name = "Knight",
             this._actualPos = actualPos
     }
     getHTML() {
         if (this._actualPos == "0") {
             return undefined;
         } else {
-            return $(`#${this._actualPos}`);
+            return $(this._actualPos).html();
         };
+    }
+    onClick(e) {
+        console.log("Début onClick(e) : ", knight.displayPiece("#" + e.currentTarget.id, allPieces));
+        for (let i = 0; i < x.length; i++) {
+            clearTimeout(x[i]);
+        };
+        // Supprime tous les évents de toutes les cases
+        for (let i = 0; i < chessBoard.length; i++) {
+            for (let j = 0; j < chessBoard[i].length; j++) {
+                $(knight.getID(chessBoard[i][j])).off();
+            };
+        };
+
+        knight.removeBalls(chessBoard);
+        const myPiece = knight.displayPiece(knight.getID(e.currentTarget.id), allPieces);
+        console.table(myPiece);
+
+        
+        const positions = knight.getAllowedPos(myPiece, allPieces)
+        // const allowedPos = [positions];
+
+        let clicked = false;
+        let newPos;
+        let positionClick = [];
+
+        const otherPieces = knight.otherPositions(chessBoard);
+        let otherPiecesClick = [];
+        let otherPiecesClicked = false;
+
+        console.log("positions : ", positions);
+        console.log("otherPieces :", otherPieces);
+        
+        knight.removeEvents(myPiece._color, blackPieces, whitePieces);
+        knight.addEvents(myPiece._color, blackPieces, whitePieces);
+
+        // Déploie les boules
+        knight.displayBalls(positions);
+
+        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < positions.length; k++) {
+            positionClick.push(() => {
+                newPos = positions[k];
+                clicked = true;
+                console.log("New position clicked :", newPos.attr("id"), clicked);
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(knight.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+            });
+        };
+        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < otherPieces.length; k++) {
+            otherPiecesClick.push(() => {
+                otherPiecesClicked = true;
+                console.log("clear balls :", otherPiecesClicked);
+                knight.removeBalls(chessBoard);
+                $(myPiece._actualPos).on("click", myPiece.onClick);
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(knight.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+            });
+        };
+
+        // Ajoute les événements liés à otherPiecesClick sur les cases vides
+        for (let k = 0; k < otherPieces.length; k++) {
+            $(knight.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
+        }
+        // Ajoute les événements positionClick sur les nouvelles positions possibles
+        for (let k = 0; k < positions.length; k++) {
+            positions[k].on("click", positionClick[k]);
+        };
+
+        function move() {
+            // console.log("ID :",id);
+            // console.log("myPiece._actualPos :",myPiece._actualPos);
+            if (clicked) {
+                console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
+                if (knight.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                    knight.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                    newPos.off();
+                }
+                $(newPos).html("");
+                $(myPiece._actualPos).children().appendTo(newPos);
+                // Clear tous les évents sur les pièces blanches
+                // Mises à jours des données :
+                $(myPiece._actualPos).off("click", myPiece.onClick);
+                myPiece._actualPos = "#" + newPos.attr("id");
+                myPiece._count++;
+                if (myPiece._color == "white") {
+                    $("h2>span").html("noirs");
+                    newGame._color = "b";
+
+                    knight.removeEvents("white", blackPieces, whitePieces);
+                    knight.addEvents("black", blackPieces, whitePieces);
+                } else {
+                    $("h2>span").html("blancs");
+                    newGame._color = "w";
+                    newGame._fullMove++;
+
+                    knight.removeEvents("black", blackPieces, whitePieces);
+                    knight.addEvents("white", blackPieces, whitePieces);
+                };
+
+
+                // Conclusions :
+                knight.removeBalls(chessBoard);
+                console.log("Piece updated :")
+                console.table(myPiece);
+                console.log("FEN updated :", newGame.getFen());
+                clicked = false;
+            } else if (otherPiecesClicked) {
+                otherPiecesClicked = false;
+            } else {
+                console.log("Waiting for : ", myPiece._actualPos);
+                let y = setTimeout(move, 100);
+                x.push(y);
+            };
+        };
+        move();
+        clearTimeout(x);
+        console.log("Fin onClick(e) : ", knight.displayPiece("#" + e.currentTarget.id, allPieces))
     }
 };
 class Rook {
@@ -669,10 +796,10 @@ let Bf = new Bishop("white", "#F1");
 let Kd = new King("white", "#D1");
 let Qe = new Queen("white", "#E1");
 
-export const blackPieces = [ra, rh, kb, kg, bc, bf, kd, qe, pa, pb, pc, pd, pe, pf, pg, ph];
-export const whitePieces = [Ra, Rh, Kb, Kg, Bc, Bf, Kd, Qe, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
-export const pawns = [pa, pb, pc, pd, pe, pf, pg, ph, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
-export const allPieces = blackPieces.concat(whitePieces);
+const blackPieces = [ra, rh, kb, kg, bc, bf, kd, qe, pa, pb, pc, pd, pe, pf, pg, ph];
+const whitePieces = [Ra, Rh, Kb, Kg, Bc, Bf, Kd, Qe, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
+const pawns = [pa, pb, pc, pd, pe, pf, pg, ph, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
+const allPieces = blackPieces.concat(whitePieces);
 $(Pa._actualPos).on('click', Pa.onClick);
 $(Pb._actualPos).on('click', Pb.onClick);
 $(Pc._actualPos).on('click', Pc.onClick);
