@@ -2,6 +2,7 @@ import * as bishop from "./js/bishop.js";
 import * as rook from "./js/rook.js";
 import * as queen from "./js/queen.js";
 import * as knight from "./js/knight.js";
+import * as king from "./js/king.js";
 import * as pawn from "./js/pawn.js";
 const chessBoard = [
     ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
@@ -13,20 +14,30 @@ const chessBoard = [
     ["A7", "B7", "C7", "D7", "E7", "F7", "G7", "H7"],
     ["A8", "B8", "C8", "D8", "E8", "F8", "G8", "H8"],
 ];
-
+// ! FEN de départ : rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
 const newGameFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 class ChessGame {
     constructor(fen = newGameFen) {
         let splitedFen = fen.split(" ");
         this._position = splitedFen[0];
         this._color = splitedFen[1];
-        this._castle = splitedFen[2];
+        this._roc = splitedFen[2];
         this._enPassant = splitedFen[3];
         this._halfMove = splitedFen[4];
         this._fullMove = splitedFen[5];
     }
     getFen() {
-        return this._position + " " + this._color + " " + this._castle + " " + this._enPassant + " " + this._halfMove + " " + this._fullMove;
+        return this._position + " " + this._color + " " + this._roc + " " + this._enPassant + " " + this._halfMove + " " + this._fullMove;
+    }
+    getWhiteRoc() {
+        const myRegex = /[A-Z]{1}/g
+        const result = this._roc.match(myRegex);
+        return result;
+    }
+    getBlackRoc() {
+        const myRegex = /[a-z]{1}/g
+        const result = this._roc.match(myRegex);
+        return result;
     }
 };
 
@@ -61,7 +72,7 @@ class Knight {
         const myPiece = knight.displayPiece(knight.getID(e.currentTarget.id), allPieces);
         console.table(myPiece);
 
-        
+
         const positions = knight.getAllowedPos(myPiece, allPieces)
         // const allowedPos = [positions];
 
@@ -75,7 +86,7 @@ class Knight {
 
         console.log("positions : ", positions);
         console.log("otherPieces :", otherPieces);
-        
+
         knight.removeEvents(myPiece._color, blackPieces, whitePieces);
         knight.addEvents(myPiece._color, blackPieces, whitePieces);
 
@@ -176,7 +187,8 @@ class Rook {
     constructor(color, actualPos) {
         this._color = color,
             this._name = "Tour",
-            this._actualPos = actualPos
+            this._actualPos = actualPos,
+            this._count=0
     };
     getHTML() {
         if (this._actualPos == "0") {
@@ -215,7 +227,7 @@ class Rook {
 
         console.log("positions : ", positions);
         console.log("otherPieces :", otherPieces);
-        
+
         rook.removeEvents(myPiece._color, blackPieces, whitePieces);
         rook.addEvents(myPiece._color, blackPieces, whitePieces);
 
@@ -343,7 +355,7 @@ class Queen {
 
 
         const allowedPos = queen.getAllowedPos(myPiece, allPieces);
-        console.log("allowedPos : ",allowedPos);
+        console.log("allowedPos : ", allowedPos);
         const positions = allowedPos[0].concat(allowedPos[1]).concat(allowedPos[2]).concat(allowedPos[3]).concat(allowedPos[4]).concat(allowedPos[5]).concat(allowedPos[6]).concat(allowedPos[7]);
 
         let clicked = false;
@@ -356,7 +368,7 @@ class Queen {
 
         console.log("positions : ", positions);
         console.log("otherPieces :", otherPieces);
-        
+
         queen.removeEvents(myPiece._color, blackPieces, whitePieces);
         queen.addEvents(myPiece._color, blackPieces, whitePieces);
 
@@ -454,10 +466,11 @@ class Queen {
     }
 };
 class King {
-    constructor(color, actualPos) {
+    constructor(color, actualPos, count = 0) {
         this._color = color,
             this._name = "King",
-            this._actualPos = actualPos
+            this._actualPos = actualPos,
+            this._count = count
     }
     getHTML() {
         if (this._actualPos == "0") {
@@ -482,27 +495,61 @@ class King {
         const myPiece = king.displayPiece(king.getID(e.currentTarget.id), allPieces);
         console.table(myPiece);
 
-        
-        const positions = king.getAllowedPos(myPiece, allPieces)
-        // const allowedPos = [positions];
+        // Initialisation roc
+        let roc1 = undefined;
+        let between1 = undefined;
+        let roc2 = undefined;
+        let between2 = undefined;
+        // Roc blanc
+        if (myPiece._color == "white") {
+            roc1 = "#B1";
+            between1 = "#C1"
+            roc2 = "#F1";
+            between2 = "#E1";
+        } else { // Roc noir
+            roc1 = "#F8";
+            between1 = "#E8";
+            roc2 = "#B8";
+            between2 = "#C8";
+        };
+        // Si il y a une pièce entre le roi et la tour alors on ne peut pas roquer
+        if (king.displayPiece(roc1, allPieces) != undefined || king.displayPiece(between1, allPieces) != undefined) {
+            roc1 = undefined;
+            between1 = undefined;
+        }
+        if (king.displayPiece(roc2, allPieces) != undefined || king.displayPiece(between2, allPieces) != undefined) {
+            roc2 = undefined;
+            between2 = undefined;
+        }
+
+        const positions = king.getAllowedPos(myPiece, allPieces);
 
         let clicked = false;
         let newPos;
         let positionClick = [];
 
-        const otherPieces = king.otherPositions(chessBoard);
+        // Supprime les cases roc1 et roc2 de otherPieces dans le but de leur rajouter un event getRoc()
+        const otherPieces = king.otherPositions(chessBoard).filter((elt) => {
+            if (king.getID(elt) == roc1 || king.getID(elt) == roc2) {
+                return false;
+            } else {
+                return true;
+            };
+        });
         let otherPiecesClick = [];
         let otherPiecesClicked = false;
 
         console.log("positions : ", positions);
         console.log("otherPieces :", otherPieces);
-        
+
         king.removeEvents(myPiece._color, blackPieces, whitePieces);
         king.addEvents(myPiece._color, blackPieces, whitePieces);
 
         // Déploie les boules
         king.displayBalls(positions);
 
+        let getRoc1 = undefined;
+        let getRoc2 = undefined;
         // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
         for (let k = 0; k < positions.length; k++) {
             positionClick.push(() => {
@@ -512,10 +559,38 @@ class King {
                 for (let i = 0; i < positions.length; i++) {
                     positions[i].off("click", positionClick[i]);
                 };
+                $(roc1).off("click", getRoc1);
+                $(roc2).off("click", getRoc2);
                 for (let i = 0; i < otherPieces.length; i++) {
                     $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
                 };
             });
+        };
+        getRoc1 = () => {
+            newPos = $(roc1);
+            clicked = true;
+            console.log("(ROC) New position clicked :", newPos.attr("id"), clicked);
+            for (let i = 0; i < positions.length; i++) {
+                positions[i].off("click", positionClick[i]);
+            };
+            $(roc1).off("click", getRoc1);
+            $(roc2).off("click", getRoc2);
+            for (let i = 0; i < otherPieces.length; i++) {
+                $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+            };
+        };
+        getRoc2 = () => {
+            newPos = $(roc2);
+            clicked = true;
+            console.log("(ROC) New position clicked :", newPos.attr("id"), clicked);
+            for (let i = 0; i < positions.length; i++) {
+                positions[i].off("click", positionClick[i]);
+            };
+            $(roc1).off("click", getRoc1);
+            $(roc2).off("click", getRoc2);
+            for (let i = 0; i < otherPieces.length; i++) {
+                $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+            };
         };
         // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
         for (let k = 0; k < otherPieces.length; k++) {
@@ -536,28 +611,84 @@ class King {
         // Ajoute les événements liés à otherPiecesClick sur les cases vides
         for (let k = 0; k < otherPieces.length; k++) {
             $(king.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
-        }
+        };
         // Ajoute les événements positionClick sur les nouvelles positions possibles
         for (let k = 0; k < positions.length; k++) {
             positions[k].on("click", positionClick[k]);
         };
+        // Ajoute les événements getRoc1 et getRoc2 sur les cases roc1 et roc2
+        $(roc1).on("click", getRoc1);
+        $(roc2).on("click", getRoc2);
 
         function move() {
-            // console.log("ID :",id);
-            // console.log("myPiece._actualPos :",myPiece._actualPos);
             if (clicked) {
                 console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
-                if (king.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
-                    king.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
-                    newPos.off();
+
+                // ! Gestion du roc !
+                if (king.getID(newPos.attr("id")) == roc1) {
+                    if (myPiece._color == "white" && king.displayPiece("#A1",allPieces)._count==0) {
+                        // Clear les cases
+                        $(roc1).html('');
+                        $(between1).html('');
+                        // Téléporte les pièces sur les cases
+                        $(myPiece._actualPos).children().appendTo(roc1);
+                        $("#A1").children().appendTo($(between1))
+                        // Maj des données
+                        king.displayPiece("#A1",allPieces)._actualPos = between1;
+                        myPiece._actualPos = roc1;
+                        myPiece._count++;
+                    } else if (myPiece._color == "black" && king.displayPiece("#H8",allPieces)._count==0) {
+                        // Clear les cases
+                        $(roc1).html('');
+                        $(between1).html('');
+                        // Téléporte les pièces sur les cases
+                        $(myPiece._actualPos).children().appendTo(roc1);
+                        $("#H8").children().appendTo($(between1))
+                        // Maj des données
+                        king.displayPiece("#H8",allPieces)._actualPos = between1;
+                        myPiece._actualPos = roc1;
+                        myPiece._count++;
+                    };
+                } else if (king.getID(newPos.attr("id")) == roc2) {
+                    if (myPiece._color == "white" && king.displayPiece("#H1",allPieces)._count==0) {
+                        // Clear les cases
+                        $(roc2).html('');
+                        $(between2).html('');
+                        // Téléporte les pièces sur les cases
+                        $(myPiece._actualPos).children().appendTo(roc2);
+                        $("#H1").children().appendTo($(between2))
+                        // Maj des données
+                        king.displayPiece("#H1",allPieces)._actualPos = between2;
+                        myPiece._actualPos = roc2;
+                        myPiece._count++;
+                    } else if (myPiece._color == "black" && king.displayPiece("#H8",allPieces)._count==0) {
+                        // Clear les cases
+                        $(roc2).html('');
+                        $(between2).html('');
+                        // Téléporte les pièces sur les cases
+                        $(myPiece._actualPos).children().appendTo(roc2);
+                        $("#A8").children().appendTo($(between2))
+                        // Maj des données
+                        king.displayPiece("#A8",allPieces)._actualPos = between2;
+                        myPiece._actualPos = roc2;
+                        myPiece._count++;
+                    };
+                } else {
+                    // Supprime la pièce attaquée (si elle existe)
+                    console.log("BEGIN MOVE :")
+                    if (king.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                        king.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                        newPos.off();
+                    };
+                    $(newPos).html("");
+                    $(myPiece._actualPos).children().appendTo(newPos);
+
+                    // Mises à jours des données :
+                    $(myPiece._actualPos).off("click", myPiece.onClick);
+                    myPiece._actualPos = "#" + newPos.attr("id");
+                    myPiece._count++;
+                    console.log("END MOVE :")
                 }
-                $(newPos).html("");
-                $(myPiece._actualPos).children().appendTo(newPos);
-                // Clear tous les évents sur les pièces blanches
-                // Mises à jours des données :
-                $(myPiece._actualPos).off("click", myPiece.onClick);
-                myPiece._actualPos = "#" + newPos.attr("id");
-                myPiece._count++;
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
                     newGame._color = "b";
@@ -576,10 +707,10 @@ class King {
 
                 // Conclusions :
                 king.removeBalls(chessBoard);
-                console.log("Piece updated :")
-                console.table(myPiece);
-                console.log("FEN updated :", newGame.getFen());
+                // console.log("Piece updated :")
+                // console.table(myPiece);
                 clicked = false;
+                console.log("FEN updated :", newGame.getFen());
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
             } else {
@@ -624,7 +755,7 @@ class Bishop {
 
 
         const allowedPos = bishop.getAllowedPos(myPiece, allPieces);
-        console.log("allowedPos : ",allowedPos);
+        console.log("allowedPos : ", allowedPos);
         const positions = allowedPos[0].concat(allowedPos[1]).concat(allowedPos[2]).concat(allowedPos[3]);
 
         let clicked = false;
@@ -637,7 +768,7 @@ class Bishop {
 
         console.log("positions : ", positions);
         console.log("otherPieces :", otherPieces);
-        
+
         bishop.removeEvents(myPiece._color, blackPieces, whitePieces);
         bishop.addEvents(myPiece._color, blackPieces, whitePieces);
 
@@ -934,5 +1065,5 @@ $(Pe._actualPos).on('click', Pe.onClick);
 $(Pf._actualPos).on('click', Pf.onClick);
 $(Pg._actualPos).on('click', Pg.onClick);
 $(Ph._actualPos).on('click', Ph.onClick);
-$(Kb._actualPos).on('click',Kb.onClick);
-$(Kg._actualPos).on('click',Kg.onClick);
+$(Kb._actualPos).on('click', Kb.onClick);
+$(Kg._actualPos).on('click', Kg.onClick);

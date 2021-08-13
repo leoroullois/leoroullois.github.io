@@ -52,14 +52,14 @@ export function getAllowedPos(myKnight,allPieces) {
     let i = strToArr(currID)[0];
     let j = strToArr(currID)[1];
     let positions = []
-    positions.push([i-1,j+2]);
-    positions.push([i+1,j+2]);
-    positions.push([i+2,j+1]);
-    positions.push([i+2,j-1]);
-    positions.push([i+1,j-2]);
-    positions.push([i-1,j-2]);
-    positions.push([i-2,j-1]);
-    positions.push([i-2,j+1]);
+    positions.push([i+1,j]);
+    positions.push([i-1,j]);
+    positions.push([i,j-1]);
+    positions.push([i,j+1]);
+    positions.push([i+1,j+1]);
+    positions.push([i+1,j-1]);
+    positions.push([i-1,j+1]);
+    positions.push([i-1,j-1]);
 
     positions=positions.filter((elt)=> {
         return arrToStr(elt)!=undefined;
