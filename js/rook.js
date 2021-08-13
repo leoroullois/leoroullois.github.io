@@ -53,81 +53,81 @@ export function getAllowedPos(myBishop,allPieces) {
     const color = myBishop._color;
     let i = strToArr(currID)[0];
     let j = strToArr(currID)[1];
-    let diag1=[];
-    let diag2=[];
-    let diag3=[];
-    let diag4=[];
+    let row1=[];
+    let row2=[];
+    let row3=[];
+    let row4=[];
     for (let k = 0; k < 8; k++) {
-        diag1.push([i-k,j+k]);
-        diag2.push([i+k,j+k]);
-        diag3.push([i+k,j-k]);
-        diag4.push([i-k,j-k]);
+        row1.push([i,j+k]);
+        row2.push([i,j-k]);
+        row3.push([i+k,j]);
+        row4.push([i-k,j]);
     };
-    diag1=diag1.filter((elt)=> {
+    row1=row1.filter((elt)=> {
         return arrToStr(elt)!=undefined;
     });
-    diag2=diag2.filter((elt)=> {
+    row2=row2.filter((elt)=> {
         return arrToStr(elt)!=undefined;
     });
-    diag3=diag3.filter((elt)=> {
+    row3=row3.filter((elt)=> {
         return arrToStr(elt)!=undefined;
     });
-    diag4=diag4.filter((elt)=> {
+    row4=row4.filter((elt)=> {
         return arrToStr(elt)!=undefined;
     });
-    diag1=diag1.map((elt)=>arrToStr(elt));
-    diag2=diag2.map((elt)=>arrToStr(elt));
-    diag3=diag3.map((elt)=>arrToStr(elt));
-    diag4=diag4.map((elt)=>arrToStr(elt));
-    let diag1Bis=[];
+    row1=row1.map((elt)=>arrToStr(elt));
+    row2=row2.map((elt)=>arrToStr(elt));
+    row3=row3.map((elt)=>arrToStr(elt));
+    row4=row4.map((elt)=>arrToStr(elt));
+    let row1Bis=[];
     let k=0;
     do {
         k++;
-        if (displayPiece(diag1[k],allPieces)!=undefined) {
-            if (displayPiece(diag1[k],allPieces)._color!=color) {
-                diag1Bis.push($(diag1[k]));
+        if (displayPiece(row1[k],allPieces)!=undefined) {
+            if (displayPiece(row1[k],allPieces)._color!=color) {
+                row1Bis.push($(row1[k]));
             };
         } else {
-            diag1Bis.push($(diag1[k]));
+            row1Bis.push($(row1[k]));
         };
-    } while (k<diag1.length && displayPiece(diag1[k],allPieces)==undefined);
-    let diag2Bis=[];
+    } while (k<row1.length && displayPiece(row1[k],allPieces)==undefined);
+    let row2Bis=[];
     k=0;
     do {
         k++;
-        if (displayPiece(diag2[k],allPieces)!=undefined) {
-            if (displayPiece(diag2[k],allPieces)._color!=color) {
-                diag2Bis.push($(diag2[k]));
+        if (displayPiece(row2[k],allPieces)!=undefined) {
+            if (displayPiece(row2[k],allPieces)._color!=color) {
+                row2Bis.push($(row2[k]));
             };
         } else {
-            diag2Bis.push($(diag2[k]));
+            row2Bis.push($(row2[k]));
         };
-    } while (k<diag2.length && displayPiece(diag2[k],allPieces)==undefined);
-    let diag3Bis=[];
+    } while (k<row2.length && displayPiece(row2[k],allPieces)==undefined);
+    let row3Bis=[];
     k=0;
     do {
         k++;
-        if (displayPiece(diag3[k],allPieces)!=undefined) {
-            if (displayPiece(diag3[k],allPieces)._color!=color) {
-                diag3Bis.push($(diag3[k]));
+        if (displayPiece(row3[k],allPieces)!=undefined) {
+            if (displayPiece(row3[k],allPieces)._color!=color) {
+                row3Bis.push($(row3[k]));
             };
         } else {
-            diag3Bis.push($(diag3[k]));
+            row3Bis.push($(row3[k]));
         };
-    } while (k<diag3.length && displayPiece(diag3[k],allPieces)==undefined);
-    let diag4Bis=[];
+    } while (k<row3.length && displayPiece(row3[k],allPieces)==undefined);
+    let row4Bis=[];
     k=0;
     do {
         k++;
-        if (displayPiece(diag4[k],allPieces)!=undefined) {
-            if (displayPiece(diag4[k],allPieces)._color!=color) {
-                diag4Bis.push($(diag4[k]));
+        if (displayPiece(row4[k],allPieces)!=undefined) {
+            if (displayPiece(row4[k],allPieces)._color!=color) {
+                row4Bis.push($(row4[k]));
             };
         } else {
-            diag4Bis.push($(diag4[k]));
+            row4Bis.push($(row4[k]));
         };
-    } while (k<diag4.length && displayPiece(diag4[k],allPieces)==undefined);
-    let positions = [diag1Bis,diag2Bis,diag3Bis,diag4Bis];
+    } while (k<row4.length && displayPiece(row4[k],allPieces)==undefined);
+    let positions = [row1Bis,row2Bis,row3Bis,row4Bis];
     return positions;
 };
 

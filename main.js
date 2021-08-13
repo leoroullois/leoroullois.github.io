@@ -1,4 +1,6 @@
 import * as bishop from "./js/bishop.js";
+import * as rook from "./js/rook.js";
+import * as queen from "./js/queen.js";
 import * as pawn from "./js/pawn.js";
 const chessBoard = [
     ["A1", "B1", "C1", "D1", "E1", "F1", "G1", "H1"],
@@ -26,6 +28,9 @@ class ChessGame {
         return this._position + " " + this._color + " " + this._castle + " " + this._enPassant + " " + this._halfMove + " " + this._fullMove;
     }
 };
+
+let x = [1];
+
 class Knight {
     constructor(color, actualPos) {
         this._color = color,
@@ -38,6 +43,301 @@ class Knight {
         } else {
             return $(`#${this._actualPos}`);
         };
+    }
+};
+class Rook {
+    constructor(color, actualPos) {
+        this._color = color,
+            this._name = "Tour",
+            this._actualPos = actualPos
+    };
+    getHTML() {
+        if (this._actualPos == "0") {
+            return undefined;
+        } else {
+            return $(this._actualPos).html();
+        };
+    }
+    onClick(e) {
+        console.log("Début onClick(e) : ", rook.displayPiece("#" + e.currentTarget.id, allPieces));
+        for (let i = 0; i < x.length; i++) {
+            clearTimeout(x[i]);
+        };
+        // Supprime tous les évents de toutes les cases
+        for (let i = 0; i < chessBoard.length; i++) {
+            for (let j = 0; j < chessBoard[i].length; j++) {
+                $(pawn.getID(chessBoard[i][j])).off();
+            };
+        };
+
+        rook.removeBalls(chessBoard);
+        const myPiece = rook.displayPiece(rook.getID(e.currentTarget.id), allPieces);
+        console.table(myPiece);
+
+
+        const allowedPos = rook.getAllowedPos(myPiece, allPieces);
+        const positions = allowedPos[0].concat(allowedPos[1]).concat(allowedPos[2]).concat(allowedPos[3]);
+
+        let clicked = false;
+        let newPos;
+        let positionClick = [];
+
+        const otherPieces = pawn.otherPositions(chessBoard);
+        let otherPiecesClick = [];
+        let otherPiecesClicked = false;
+
+        console.log("positions : ", positions);
+        console.log("otherPieces :", otherPieces);
+        
+        rook.removeEvents(myPiece._color, blackPieces, whitePieces);
+        rook.addEvents(myPiece._color, blackPieces, whitePieces);
+
+        // Déploie les boules
+        rook.displayBalls(allowedPos);
+
+        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < positions.length; k++) {
+            positionClick.push(() => {
+                newPos = positions[k];
+                clicked = true;
+                console.log("New position clicked :", newPos.attr("id"), clicked);
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(rook.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+            });
+        };
+        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < otherPieces.length; k++) {
+            otherPiecesClick.push(() => {
+                otherPiecesClicked = true;
+                console.log("clear balls :", otherPiecesClicked);
+                rook.removeBalls(chessBoard);
+                $(myPiece._actualPos).on("click", myPiece.onClick);
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(rook.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+            });
+        };
+
+        // Ajoute les événements liés à otherPiecesClick sur les cases vides
+        for (let k = 0; k < otherPieces.length; k++) {
+            $(rook.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
+        }
+        // Ajoute les événements positionClick sur les nouvelles positions possibles
+        for (let k = 0; k < positions.length; k++) {
+            positions[k].on("click", positionClick[k]);
+        };
+
+        function move() {
+            // console.log("ID :",id);
+            // console.log("myPiece._actualPos :",myPiece._actualPos);
+            if (clicked) {
+                console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
+                if (rook.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                    rook.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                    newPos.off();
+                }
+                $(newPos).html("");
+                $(myPiece._actualPos).children().appendTo(newPos);
+                // Clear tous les évents sur les pièces blanches
+                // Mises à jours des données :
+                $(myPiece._actualPos).off("click", myPiece.onClick);
+                myPiece._actualPos = "#" + newPos.attr("id");
+                myPiece._count++;
+                if (myPiece._color == "white") {
+                    $("h2>span").html("noirs");
+                    newGame._color = "b";
+
+                    rook.removeEvents("white", blackPieces, whitePieces);
+                    rook.addEvents("black", blackPieces, whitePieces);
+                } else {
+                    $("h2>span").html("blancs");
+                    newGame._color = "w";
+                    newGame._fullMove++;
+
+                    rook.removeEvents("black", blackPieces, whitePieces);
+                    rook.addEvents("white", blackPieces, whitePieces);
+                };
+
+
+                // Conclusions :
+                rook.removeBalls(chessBoard);
+                console.log("Piece updated :")
+                console.table(myPiece);
+                console.log("FEN updated :", newGame.getFen());
+                clicked = false;
+            } else if (otherPiecesClicked) {
+                otherPiecesClicked = false;
+            } else {
+                console.log("Waiting for : ", myPiece._actualPos);
+                let y = setTimeout(move, 100);
+                x.push(y);
+            };
+        };
+        move();
+        clearTimeout(x);
+        console.log("Fin onClick(e) : ", rook.displayPiece("#" + e.currentTarget.id, allPieces))
+    }
+};
+class Queen {
+    constructor(color, actualPos) {
+        this._color = color,
+            this._name = "Dame",
+            this._actualPos = actualPos
+    };
+    getHTML() {
+        if (this._actualPos == "0") {
+            return undefined;
+        } else {
+            return $(`#${this._actualPos}`);
+        };
+    };
+    onClick(e) {
+        console.log("Début onClick(e) : ", queen.displayPiece("#" + e.currentTarget.id, allPieces));
+        for (let i = 0; i < x.length; i++) {
+            clearTimeout(x[i]);
+        };
+        // Supprime tous les évents de toutes les cases
+        for (let i = 0; i < chessBoard.length; i++) {
+            for (let j = 0; j < chessBoard[i].length; j++) {
+                $(pawn.getID(chessBoard[i][j])).off();
+            };
+        };
+
+        queen.removeBalls(chessBoard);
+        const myPiece = queen.displayPiece(queen.getID(e.currentTarget.id), allPieces);
+        console.table(myPiece);
+
+
+        const allowedPos = queen.getAllowedPos(myPiece, allPieces);
+        console.log("allowedPos : ",allowedPos);
+        const positions = allowedPos[0].concat(allowedPos[1]).concat(allowedPos[2]).concat(allowedPos[3]).concat(allowedPos[4]).concat(allowedPos[5]).concat(allowedPos[6]).concat(allowedPos[7]);
+
+        let clicked = false;
+        let newPos;
+        let positionClick = [];
+
+        const otherPieces = pawn.otherPositions(chessBoard);
+        let otherPiecesClick = [];
+        let otherPiecesClicked = false;
+
+        console.log("positions : ", positions);
+        console.log("otherPieces :", otherPieces);
+        
+        queen.removeEvents(myPiece._color, blackPieces, whitePieces);
+        queen.addEvents(myPiece._color, blackPieces, whitePieces);
+
+        // Déploie les boules
+        queen.displayBalls(allowedPos);
+
+        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < positions.length; k++) {
+            positionClick.push(() => {
+                newPos = positions[k];
+                clicked = true;
+                console.log("New position clicked :", newPos.attr("id"), clicked);
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(queen.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+            });
+        };
+        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < otherPieces.length; k++) {
+            otherPiecesClick.push(() => {
+                otherPiecesClicked = true;
+                console.log("clear balls :", otherPiecesClicked);
+                queen.removeBalls(chessBoard);
+                $(myPiece._actualPos).on("click", myPiece.onClick);
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(queen.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+            });
+        };
+
+        // Ajoute les événements liés à otherPiecesClick sur les cases vides
+        for (let k = 0; k < otherPieces.length; k++) {
+            $(queen.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
+        }
+        // Ajoute les événements positionClick sur les nouvelles positions possibles
+        for (let k = 0; k < positions.length; k++) {
+            positions[k].on("click", positionClick[k]);
+        };
+
+        function move() {
+            // console.log("ID :",id);
+            // console.log("myPiece._actualPos :",myPiece._actualPos);
+            if (clicked) {
+                console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
+                if (queen.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                    queen.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                    newPos.off();
+                }
+                $(newPos).html("");
+                $(myPiece._actualPos).children().appendTo(newPos);
+                // Clear tous les évents sur les pièces blanches
+                // Mises à jours des données :
+                $(myPiece._actualPos).off("click", myPiece.onClick);
+                myPiece._actualPos = "#" + newPos.attr("id");
+                myPiece._count++;
+                if (myPiece._color == "white") {
+                    $("h2>span").html("noirs");
+                    newGame._color = "b";
+
+                    queen.removeEvents("white", blackPieces, whitePieces);
+                    queen.addEvents("black", blackPieces, whitePieces);
+                } else {
+                    $("h2>span").html("blancs");
+                    newGame._color = "w";
+                    newGame._fullMove++;
+
+                    queen.removeEvents("black", blackPieces, whitePieces);
+                    queen.addEvents("white", blackPieces, whitePieces);
+                };
+
+
+                // Conclusions :
+                queen.removeBalls(chessBoard);
+                console.log("Piece updated :")
+                console.table(myPiece);
+                console.log("FEN updated :", newGame.getFen());
+                clicked = false;
+            } else if (otherPiecesClicked) {
+                otherPiecesClicked = false;
+            } else {
+                console.log("Waiting for : ", myPiece._actualPos);
+                let y = setTimeout(move, 100);
+                x.push(y);
+            };
+        };
+        move();
+        clearTimeout(x);
+        console.log("Fin onClick(e) : ", queen.displayPiece("#" + e.currentTarget.id, allPieces))
+    }
+};
+class King {
+    constructor(color, actualPos) {
+        this._color = color,
+            this._name = "Roi",
+            this._actualPos = actualPos
+    }
+    getHTML() {
+        if (this._actualPos == "0") {
+            return undefined;
+        } else {
+            return $(`#${this._actualPos}`);
+        }
     }
 };
 class Bishop {
@@ -54,63 +354,134 @@ class Bishop {
         };
     }
     onClick(e) {
-        console.log("Début onClick(e) : ", bishop.displayPiece("#" + e.currentTarget.id, allPieces))
+        console.log("Début onClick(e) : ", bishop.displayPiece("#" + e.currentTarget.id, allPieces));
+        for (let i = 0; i < x.length; i++) {
+            clearTimeout(x[i]);
+        };
+        // Supprime tous les évents de toutes les cases
+        for (let i = 0; i < chessBoard.length; i++) {
+            for (let j = 0; j < chessBoard[i].length; j++) {
+                $(pawn.getID(chessBoard[i][j])).off();
+            };
+        };
+
         bishop.removeBalls(chessBoard);
         const myPiece = bishop.displayPiece(bishop.getID(e.currentTarget.id), allPieces);
         console.table(myPiece);
 
 
-        const positions = bishop.getAllowedPos(myPiece, allPieces);
-        bishop.displayBalls(positions);
-        const allPositions = positions[0] + positions[1] + positions[2] + positions[3];
-        console.log("positions : ", allPositions[1]);
+        const allowedPos = bishop.getAllowedPos(myPiece, allPieces);
+        console.log("allowedPos : ",allowedPos);
+        const positions = allowedPos[0].concat(allowedPos[1]).concat(allowedPos[2]).concat(allowedPos[3]);
 
+        let clicked = false;
+        let newPos;
+        let positionClick = [];
+
+        const otherPieces = pawn.otherPositions(chessBoard);
+        let otherPiecesClick = [];
+        let otherPiecesClicked = false;
+
+        console.log("positions : ", positions);
+        console.log("otherPieces :", otherPieces);
+        
+        bishop.removeEvents(myPiece._color, blackPieces, whitePieces);
+        bishop.addEvents(myPiece._color, blackPieces, whitePieces);
+
+        // Déploie les boules
+        bishop.displayBalls(allowedPos);
+
+        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < positions.length; k++) {
+            positionClick.push(() => {
+                newPos = positions[k];
+                clicked = true;
+                console.log("New position clicked :", newPos.attr("id"), clicked);
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(bishop.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+            });
+        };
+        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < otherPieces.length; k++) {
+            otherPiecesClick.push(() => {
+                otherPiecesClicked = true;
+                console.log("clear balls :", otherPiecesClicked);
+                bishop.removeBalls(chessBoard);
+                $(myPiece._actualPos).on("click", myPiece.onClick);
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(bishop.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+            });
+        };
+
+        // Ajoute les événements liés à otherPiecesClick sur les cases vides
+        for (let k = 0; k < otherPieces.length; k++) {
+            $(bishop.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
+        }
+        // Ajoute les événements positionClick sur les nouvelles positions possibles
+        for (let k = 0; k < positions.length; k++) {
+            positions[k].on("click", positionClick[k]);
+        };
+
+        function move() {
+            // console.log("ID :",id);
+            // console.log("myPiece._actualPos :",myPiece._actualPos);
+            if (clicked) {
+                console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
+                if (bishop.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                    bishop.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                    newPos.off();
+                }
+                $(newPos).html("");
+                $(myPiece._actualPos).children().appendTo(newPos);
+                // Clear tous les évents sur les pièces blanches
+                // Mises à jours des données :
+                $(myPiece._actualPos).off("click", myPiece.onClick);
+                myPiece._actualPos = "#" + newPos.attr("id");
+                myPiece._count++;
+                if (myPiece._color == "white") {
+                    $("h2>span").html("noirs");
+                    newGame._color = "b";
+
+                    bishop.removeEvents("white", blackPieces, whitePieces);
+                    bishop.addEvents("black", blackPieces, whitePieces);
+                } else {
+                    $("h2>span").html("blancs");
+                    newGame._color = "w";
+                    newGame._fullMove++;
+
+                    bishop.removeEvents("black", blackPieces, whitePieces);
+                    bishop.addEvents("white", blackPieces, whitePieces);
+                };
+
+
+                // Conclusions :
+                bishop.removeBalls(chessBoard);
+                console.log("Piece updated :")
+                console.table(myPiece);
+                console.log("FEN updated :", newGame.getFen());
+                clicked = false;
+            } else if (otherPiecesClicked) {
+                otherPiecesClicked = false;
+            } else {
+                console.log("Waiting for : ", myPiece._actualPos);
+                let y = setTimeout(move, 100);
+                x.push(y);
+            };
+        };
+        move();
+        clearTimeout(x);
         console.log("Fin onClick(e) : ", bishop.displayPiece("#" + e.currentTarget.id, allPieces))
     }
 };
-class Rook {
-    constructor(color, actualPos) {
-        this._color = color,
-            this._name = "Tour",
-            this._actualPos = actualPos
-    };
-    getHTML() {
-        if (this._actualPos == "0") {
-            return undefined;
-        } else {
-            return $(this._actualPos).html();
-        };
-    }
-};
-class Queen {
-    constructor(color, actualPos) {
-        this._color = color,
-            this._name = "Dame",
-            this._actualPos = actualPos
-    };
-    getHTML() {
-        if (this._actualPos == "0") {
-            return undefined;
-        } else {
-            return $(`#${this._actualPos}`);
-        };
-    };
-};
-class King {
-    constructor(color, actualPos) {
-        this._color = color,
-            this._name = "Roi",
-            this._actualPos = actualPos
-    }
-    getHTML() {
-        if (this._actualPos == "0") {
-            return undefined;
-        } else {
-            return $(`#${this._actualPos}`);
-        }
-    }
-};
-let x = [1];
+
 class Pawn {
     constructor(color, actualPos, count = 0) {
         this._color = color,
@@ -131,9 +502,9 @@ class Pawn {
         for (let i = 0; i < x.length; i++) {
             clearTimeout(x[i]);
         };
+        // Supprime tous les évents de toutes les cases
         for (let i = 0; i < chessBoard.length; i++) {
             for (let j = 0; j < chessBoard[i].length; j++) {
-                // console.log("AZ",$(pawn.getID(chessBoard[i][j])));
                 $(pawn.getID(chessBoard[i][j])).off();
             };
         };
@@ -143,9 +514,8 @@ class Pawn {
 
         // Récup tous les coups possibles [["A1","A2"],["B3"]] avec les endroits vides et les endroits à attaquer
         const allowedPos = pawn.getAllowedPos(myPiece);
-
         const positions = allowedPos[0].concat(allowedPos[1]);
-        console.log(positions[0][0])
+
         let clicked = false;
         let newPos;
         let positionClick = [];
@@ -154,8 +524,8 @@ class Pawn {
         let otherPiecesClick = [];
         let otherPiecesClicked = false;
 
-        console.log("otherPieces :", otherPieces);
         console.log("positions : ", positions);
+        console.log("otherPieces :", otherPieces);
 
         pawn.removeEvents(myPiece._color, blackPieces, whitePieces);
         pawn.addEvents(myPiece._color, blackPieces, whitePieces);
@@ -260,7 +630,7 @@ class Pawn {
         };
         move();
         clearTimeout(x);
-        console.log("Fin onClick(e) : ", pawn.displayPiece("#" + e.currentTarget.id, allPieces))
+        console.log("Fin onClick(e) : ", pawn.displayPiece("#" + e.currentTarget.id, allPieces));
     }
 };
 
@@ -295,7 +665,7 @@ let Rh = new Rook("white", "#H1");
 let Kb = new Knight("white", "#B1");
 let Kg = new Knight("white", "#G1");
 let Bc = new Bishop("white", "#C1");
-let Bf = new Bishop("white", "#E4");
+let Bf = new Bishop("white", "#F1");
 let Kd = new King("white", "#D1");
 let Qe = new Queen("white", "#E1");
 

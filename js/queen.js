@@ -26,7 +26,7 @@ export function delID(id) {
 // Cases = liste d'objets jQuery des cases en question
 export function displayBalls(cases) {
     for (let k=0;k<cases.length;k++) {
-        cases[k].forEach(elt => {
+        cases[k].forEach((elt) => {
             if (elt.html()=="") {
                 elt.html(ball);
             };
@@ -48,7 +48,13 @@ export function displayPiece(id, allPieces) {
 };
 
 // Renvoi les objets jQuery des positions possibles [[],[]] avec en premier les coups basique et en second les attaques;
-export function getAllowedPos(myBishop,allPieces) {
+export function getAllowedPos(myQueen,allPieces) {
+    const pos1= getAllowedPos1(myQueen,allPieces);
+    const pos2 = getAllowedPos2(myQueen,allPieces);
+    let positions = pos1.concat(pos2);
+    return positions;
+}
+export function getAllowedPos1(myBishop,allPieces) {
     const currID = myBishop._actualPos;
     const color = myBishop._color;
     let i = strToArr(currID)[0];
@@ -130,7 +136,88 @@ export function getAllowedPos(myBishop,allPieces) {
     let positions = [diag1Bis,diag2Bis,diag3Bis,diag4Bis];
     return positions;
 };
-
+export function getAllowedPos2(myBishop,allPieces) {
+    const currID = myBishop._actualPos;
+    const color = myBishop._color;
+    let i = strToArr(currID)[0];
+    let j = strToArr(currID)[1];
+    let row1=[];
+    let row2=[];
+    let row3=[];
+    let row4=[];
+    for (let k = 0; k < 8; k++) {
+        row1.push([i,j+k]);
+        row2.push([i,j-k]);
+        row3.push([i+k,j]);
+        row4.push([i-k,j]);
+    };
+    row1=row1.filter((elt)=> {
+        return arrToStr(elt)!=undefined;
+    });
+    row2=row2.filter((elt)=> {
+        return arrToStr(elt)!=undefined;
+    });
+    row3=row3.filter((elt)=> {
+        return arrToStr(elt)!=undefined;
+    });
+    row4=row4.filter((elt)=> {
+        return arrToStr(elt)!=undefined;
+    });
+    row1=row1.map((elt)=>arrToStr(elt));
+    row2=row2.map((elt)=>arrToStr(elt));
+    row3=row3.map((elt)=>arrToStr(elt));
+    row4=row4.map((elt)=>arrToStr(elt));
+    let row1Bis=[];
+    let k=0;
+    do {
+        k++;
+        if (displayPiece(row1[k],allPieces)!=undefined) {
+            if (displayPiece(row1[k],allPieces)._color!=color) {
+                row1Bis.push($(row1[k]));
+            };
+        } else {
+            row1Bis.push($(row1[k]));
+        };
+    } while (k<row1.length && displayPiece(row1[k],allPieces)==undefined);
+    let row2Bis=[];
+    k=0;
+    do {
+        k++;
+        if (displayPiece(row2[k],allPieces)!=undefined) {
+            if (displayPiece(row2[k],allPieces)._color!=color) {
+                row2Bis.push($(row2[k]));
+            };
+        } else {
+            row2Bis.push($(row2[k]));
+        };
+    } while (k<row2.length && displayPiece(row2[k],allPieces)==undefined);
+    let row3Bis=[];
+    k=0;
+    do {
+        k++;
+        if (displayPiece(row3[k],allPieces)!=undefined) {
+            if (displayPiece(row3[k],allPieces)._color!=color) {
+                row3Bis.push($(row3[k]));
+            };
+        } else {
+            row3Bis.push($(row3[k]));
+        };
+    } while (k<row3.length && displayPiece(row3[k],allPieces)==undefined);
+    let row4Bis=[];
+    k=0;
+    do {
+        k++;
+        if (displayPiece(row4[k],allPieces)!=undefined) {
+            if (displayPiece(row4[k],allPieces)._color!=color) {
+                row4Bis.push($(row4[k]));
+            };
+        } else {
+            row4Bis.push($(row4[k]));
+        };
+    } while (k<row4.length && displayPiece(row4[k],allPieces)==undefined);
+    let positions = [row1Bis,row2Bis,row3Bis,row4Bis];
+    return positions;
+};
 // changePos("#A1",2,5) => "#C6"
 export function changePos(actualPos, i = 0, j = 0) {
     let coords = strToArr(actualPos);
