@@ -456,15 +456,141 @@ class Queen {
 class King {
     constructor(color, actualPos) {
         this._color = color,
-            this._name = "Roi",
+            this._name = "King",
             this._actualPos = actualPos
     }
     getHTML() {
         if (this._actualPos == "0") {
             return undefined;
         } else {
-            return $(`#${this._actualPos}`);
+            return $(this._actualPos).html();
+        };
+    }
+    onClick(e) {
+        console.log("Début onClick(e) : ", king.displayPiece("#" + e.currentTarget.id, allPieces));
+        for (let i = 0; i < x.length; i++) {
+            clearTimeout(x[i]);
+        };
+        // Supprime tous les évents de toutes les cases
+        for (let i = 0; i < chessBoard.length; i++) {
+            for (let j = 0; j < chessBoard[i].length; j++) {
+                $(king.getID(chessBoard[i][j])).off();
+            };
+        };
+
+        king.removeBalls(chessBoard);
+        const myPiece = king.displayPiece(king.getID(e.currentTarget.id), allPieces);
+        console.table(myPiece);
+
+        
+        const positions = king.getAllowedPos(myPiece, allPieces)
+        // const allowedPos = [positions];
+
+        let clicked = false;
+        let newPos;
+        let positionClick = [];
+
+        const otherPieces = king.otherPositions(chessBoard);
+        let otherPiecesClick = [];
+        let otherPiecesClicked = false;
+
+        console.log("positions : ", positions);
+        console.log("otherPieces :", otherPieces);
+        
+        king.removeEvents(myPiece._color, blackPieces, whitePieces);
+        king.addEvents(myPiece._color, blackPieces, whitePieces);
+
+        // Déploie les boules
+        king.displayBalls(positions);
+
+        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < positions.length; k++) {
+            positionClick.push(() => {
+                newPos = positions[k];
+                clicked = true;
+                console.log("New position clicked :", newPos.attr("id"), clicked);
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+            });
+        };
+        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
+        for (let k = 0; k < otherPieces.length; k++) {
+            otherPiecesClick.push(() => {
+                otherPiecesClicked = true;
+                console.log("clear balls :", otherPiecesClicked);
+                king.removeBalls(chessBoard);
+                $(myPiece._actualPos).on("click", myPiece.onClick);
+                for (let i = 0; i < otherPieces.length; i++) {
+                    $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+                };
+                for (let i = 0; i < positions.length; i++) {
+                    positions[i].off("click", positionClick[i]);
+                };
+            });
+        };
+
+        // Ajoute les événements liés à otherPiecesClick sur les cases vides
+        for (let k = 0; k < otherPieces.length; k++) {
+            $(king.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
         }
+        // Ajoute les événements positionClick sur les nouvelles positions possibles
+        for (let k = 0; k < positions.length; k++) {
+            positions[k].on("click", positionClick[k]);
+        };
+
+        function move() {
+            // console.log("ID :",id);
+            // console.log("myPiece._actualPos :",myPiece._actualPos);
+            if (clicked) {
+                console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
+                if (king.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                    king.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                    newPos.off();
+                }
+                $(newPos).html("");
+                $(myPiece._actualPos).children().appendTo(newPos);
+                // Clear tous les évents sur les pièces blanches
+                // Mises à jours des données :
+                $(myPiece._actualPos).off("click", myPiece.onClick);
+                myPiece._actualPos = "#" + newPos.attr("id");
+                myPiece._count++;
+                if (myPiece._color == "white") {
+                    $("h2>span").html("noirs");
+                    newGame._color = "b";
+
+                    king.removeEvents("white", blackPieces, whitePieces);
+                    king.addEvents("black", blackPieces, whitePieces);
+                } else {
+                    $("h2>span").html("blancs");
+                    newGame._color = "w";
+                    newGame._fullMove++;
+
+                    king.removeEvents("black", blackPieces, whitePieces);
+                    king.addEvents("white", blackPieces, whitePieces);
+                };
+
+
+                // Conclusions :
+                king.removeBalls(chessBoard);
+                console.log("Piece updated :")
+                console.table(myPiece);
+                console.log("FEN updated :", newGame.getFen());
+                clicked = false;
+            } else if (otherPiecesClicked) {
+                otherPiecesClicked = false;
+            } else {
+                console.log("Waiting for : ", myPiece._actualPos);
+                let y = setTimeout(move, 100);
+                x.push(y);
+            };
+        };
+        move();
+        clearTimeout(x);
+        console.log("Fin onClick(e) : ", king.displayPiece("#" + e.currentTarget.id, allPieces))
     }
 };
 class Bishop {
@@ -808,3 +934,5 @@ $(Pe._actualPos).on('click', Pe.onClick);
 $(Pf._actualPos).on('click', Pf.onClick);
 $(Pg._actualPos).on('click', Pg.onClick);
 $(Ph._actualPos).on('click', Ph.onClick);
+$(Kb._actualPos).on('click',Kb.onClick);
+$(Kg._actualPos).on('click',Kg.onClick);
