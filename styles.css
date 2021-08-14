@@ -1,8 +1,8 @@
 :root {
     --main-black: #303030;
     --main-white: rgb(247, 247, 247);
-    --chess-black: #769656;
-    --chess-white: #eeeed2;
+    --chess-black: #487eb0;
+    --chess-white: #f5f6fa;
 }
 *, ::after, ::before {
     box-sizing: border-box;

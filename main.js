@@ -516,11 +516,20 @@ class King {
         if (king.displayPiece(roc1, allPieces) != undefined || king.displayPiece(between1, allPieces) != undefined) {
             roc1 = undefined;
             between1 = undefined;
-        }
+        };
         if (king.displayPiece(roc2, allPieces) != undefined || king.displayPiece(between2, allPieces) != undefined) {
             roc2 = undefined;
             between2 = undefined;
-        }
+        };
+        if(myPiece._color=="white") {
+            if(king.displayPiece("#G1",allPieces)!=undefined) {
+                roc2=undefined;
+            };
+        } else {
+            if(king.displayPiece("#G8",allPieces)!=undefined) {
+                roc1=undefined;
+            };
+        };
 
         const positions = king.getAllowedPos(myPiece, allPieces);
 
@@ -619,7 +628,21 @@ class King {
         // Ajoute les événements getRoc1 et getRoc2 sur les cases roc1 et roc2
         $(roc1).on("click", getRoc1);
         $(roc2).on("click", getRoc2);
-
+        if (myPiece._color=="white") {
+            if (king.displayPiece("#A1",allPieces)._count==0) {
+                $(roc1).html(king.ball);
+            }
+            if (king.displayPiece("#H1",allPieces)._count==0) {
+                $(roc2).html(king.ball);
+            };
+        } else {
+            if (king.displayPiece("#H8",allPieces)._count==0) {
+                $(roc1).html(king.ball);
+            }
+            if (king.displayPiece("#A8",allPieces)._count==0) {
+                $(roc2).html(king.ball);
+            };
+        };
         function move() {
             if (clicked) {
                 console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
