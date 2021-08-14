@@ -186,9 +186,9 @@ class Knight {
 class Rook {
     constructor(color, actualPos) {
         this._color = color,
-            this._name = "Tour",
+            this._name = "Rook",
             this._actualPos = actualPos,
-            this._count=0
+            this._count = 0
     };
     getHTML() {
         if (this._actualPos == "0") {
@@ -327,7 +327,7 @@ class Rook {
 class Queen {
     constructor(color, actualPos) {
         this._color = color,
-            this._name = "Dame",
+            this._name = "Queen",
             this._actualPos = actualPos
     };
     getHTML() {
@@ -521,13 +521,13 @@ class King {
             roc2 = undefined;
             between2 = undefined;
         };
-        if(myPiece._color=="white") {
-            if(king.displayPiece("#G1",allPieces)!=undefined) {
-                roc2=undefined;
+        if (myPiece._color == "white") {
+            if (king.displayPiece("#G1", allPieces) != undefined) {
+                roc2 = undefined;
             };
         } else {
-            if(king.displayPiece("#G8",allPieces)!=undefined) {
-                roc1=undefined;
+            if (king.displayPiece("#G8", allPieces) != undefined) {
+                roc1 = undefined;
             };
         };
 
@@ -628,28 +628,29 @@ class King {
         // Ajoute les événements getRoc1 et getRoc2 sur les cases roc1 et roc2
         $(roc1).on("click", getRoc1);
         $(roc2).on("click", getRoc2);
-        if (myPiece._color=="white") {
-            if (king.displayPiece("#A1",allPieces)._count==0) {
+        if (myPiece._color == "white") {
+            if (king.displayPiece("#A1", allPieces)._count == 0) {
                 $(roc1).html(king.ball);
             }
-            if (king.displayPiece("#H1",allPieces)._count==0) {
+            if (king.displayPiece("#H1", allPieces)._count == 0) {
                 $(roc2).html(king.ball);
             };
         } else {
-            if (king.displayPiece("#H8",allPieces)._count==0) {
+            if (king.displayPiece("#H8", allPieces)._count == 0) {
                 $(roc1).html(king.ball);
             }
-            if (king.displayPiece("#A8",allPieces)._count==0) {
+            if (king.displayPiece("#A8", allPieces)._count == 0) {
                 $(roc2).html(king.ball);
             };
         };
+
         function move() {
             if (clicked) {
                 console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
 
                 // ! Gestion du roc !
                 if (king.getID(newPos.attr("id")) == roc1) {
-                    if (myPiece._color == "white" && king.displayPiece("#A1",allPieces)._count==0) {
+                    if (myPiece._color == "white" && king.displayPiece("#A1", allPieces)._count == 0) {
                         // Clear les cases
                         $(roc1).html('');
                         $(between1).html('');
@@ -657,10 +658,10 @@ class King {
                         $(myPiece._actualPos).children().appendTo(roc1);
                         $("#A1").children().appendTo($(between1))
                         // Maj des données
-                        king.displayPiece("#A1",allPieces)._actualPos = between1;
+                        king.displayPiece("#A1", allPieces)._actualPos = between1;
                         myPiece._actualPos = roc1;
                         myPiece._count++;
-                    } else if (myPiece._color == "black" && king.displayPiece("#H8",allPieces)._count==0) {
+                    } else if (myPiece._color == "black" && king.displayPiece("#H8", allPieces)._count == 0) {
                         // Clear les cases
                         $(roc1).html('');
                         $(between1).html('');
@@ -668,12 +669,12 @@ class King {
                         $(myPiece._actualPos).children().appendTo(roc1);
                         $("#H8").children().appendTo($(between1))
                         // Maj des données
-                        king.displayPiece("#H8",allPieces)._actualPos = between1;
+                        king.displayPiece("#H8", allPieces)._actualPos = between1;
                         myPiece._actualPos = roc1;
                         myPiece._count++;
                     };
                 } else if (king.getID(newPos.attr("id")) == roc2) {
-                    if (myPiece._color == "white" && king.displayPiece("#H1",allPieces)._count==0) {
+                    if (myPiece._color == "white" && king.displayPiece("#H1", allPieces)._count == 0) {
                         // Clear les cases
                         $(roc2).html('');
                         $(between2).html('');
@@ -681,10 +682,10 @@ class King {
                         $(myPiece._actualPos).children().appendTo(roc2);
                         $("#H1").children().appendTo($(between2))
                         // Maj des données
-                        king.displayPiece("#H1",allPieces)._actualPos = between2;
+                        king.displayPiece("#H1", allPieces)._actualPos = between2;
                         myPiece._actualPos = roc2;
                         myPiece._count++;
-                    } else if (myPiece._color == "black" && king.displayPiece("#H8",allPieces)._count==0) {
+                    } else if (myPiece._color == "black" && king.displayPiece("#H8", allPieces)._count == 0) {
                         // Clear les cases
                         $(roc2).html('');
                         $(between2).html('');
@@ -692,7 +693,7 @@ class King {
                         $(myPiece._actualPos).children().appendTo(roc2);
                         $("#A8").children().appendTo($(between2))
                         // Maj des données
-                        king.displayPiece("#A8",allPieces)._actualPos = between2;
+                        king.displayPiece("#A8", allPieces)._actualPos = between2;
                         myPiece._actualPos = roc2;
                         myPiece._count++;
                     };
@@ -890,12 +891,13 @@ class Bishop {
 };
 
 class Pawn {
-    constructor(color, actualPos, count = 0) {
+    constructor(color, actualPos) {
         this._color = color,
             this._name = "Pawn",
             this._actualPos = actualPos,
-            this._count = count,
-            this._promoted = false
+            this._count = 0,
+            this._promoted = false,
+            this._enPassant = false
     }
     getHTML() {
         if (this._actualPos == "0") {
@@ -916,18 +918,66 @@ class Pawn {
             };
         };
         pawn.removeBalls(chessBoard);
-        const myPiece = pawn.displayPiece(pawn.getID(e.currentTarget.id), allPieces);
+        let myPiece = pawn.displayPiece(pawn.getID(e.currentTarget.id), allPieces);
         console.table(myPiece);
+
+        if (myPiece._color == "white") {
+            for (let k = 0; k < whitePawns.length; k++) {
+                whitePawns[k]._enPassant = false;
+            };
+        } else {
+            for (let k = 0; k < blackPawns.length; k++) {
+                blackPawns[k]._enPassant = false;
+            };
+        };
 
         // Récup tous les coups possibles [["A1","A2"],["B3"]] avec les endroits vides et les endroits à attaquer
         const allowedPos = pawn.getAllowedPos(myPiece);
         const positions = allowedPos[0].concat(allowedPos[1]);
 
+        // ! Gestion de la prise en passant !!
+        // ID de la case de destination si la prise en passant est possible
+        let enPassant1 = undefined;
+        // Pièce adverse qui se fait manger lors de la prise en passant
+        let enPassant1Piece = pawn.displayPiece(pawn.changePos(myPiece._actualPos, 1, 0), allPieces);
+
+        // ID de la case de destination si la prise en passant est possible
+        let enPassant2 = undefined;
+        // Pièce adverse qui se fait manger lors de la prise en passant
+        let enPassant2Piece = pawn.displayPiece(pawn.changePos(myPiece._actualPos, -1, 0), allPieces);
+
+        if (myPiece._color == "black") {
+            // Si enPassant1Piece est un PION && que la position finale est libre :
+            if (enPassant1Piece != undefined && enPassant1Piece._enPassant == true && enPassant1Piece._name == "Pawn" && enPassant1Piece._color != myPiece._color && pawn.displayPiece(pawn.changePos(myPiece._actualPos, 1, 1), allPieces) == undefined) {
+                enPassant1 = pawn.changePos(myPiece._actualPos, 1, 1);
+            };
+            if (enPassant2Piece != undefined && enPassant2Piece._enPassant == true && enPassant2Piece._name == "Pawn" && enPassant2Piece._color != myPiece._color && pawn.displayPiece(pawn.changePos(myPiece._actualPos, -1, 1), allPieces) == undefined) {
+                enPassant2 = pawn.changePos(myPiece._actualPos, -1, 1);
+            };
+        } else {
+            // Si enPassant1Piece est un PION && que la position finale est libre :
+            if (enPassant1Piece != undefined && enPassant1Piece._enPassant == true && enPassant1Piece._name == "Pawn" && enPassant1Piece._color != myPiece._color && pawn.displayPiece(pawn.changePos(myPiece._actualPos, 1, 1), allPieces) == undefined) {
+                enPassant1 = pawn.changePos(myPiece._actualPos, 1, -1);
+            };
+            if (enPassant2Piece != undefined && enPassant2Piece._enPassant == true && enPassant2Piece._name == "Pawn" && enPassant2Piece._color != myPiece._color && pawn.displayPiece(pawn.changePos(myPiece._actualPos, -1, 1), allPieces) == undefined) {
+                enPassant2 = pawn.changePos(myPiece._actualPos, -1, -1);
+            };
+        };
+
+
         let clicked = false;
         let newPos;
         let positionClick = [];
 
-        const otherPieces = pawn.otherPositions(chessBoard);
+
+        // Supprime les cases enPassant1 et enPassant2 de otherPieces dans le but de leur rajouter un event getRoc()
+        const otherPieces = pawn.otherPositions(chessBoard).filter((elt) => {
+            if (pawn.getID(elt) == enPassant1 || pawn.getID(elt) == enPassant2) {
+                return false;
+            } else {
+                return true;
+            };
+        });
         let otherPiecesClick = [];
         let otherPiecesClicked = false;
 
@@ -940,7 +990,11 @@ class Pawn {
         // Déploie les boules
         pawn.displayBalls(allowedPos);
 
-        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvir mieux les supprimer par la suite
+
+        let getEnPassant1 = undefined;
+        let getEnPassant2 = undefined;
+
+        // Ajoute tous les événéments liés à la fonction positionClick dans une liste pour pouvoir mieux les supprimer par la suite
         for (let k = 0; k < positions.length; k++) {
             positionClick.push(() => {
                 newPos = positions[k];
@@ -949,12 +1003,14 @@ class Pawn {
                 for (let i = 0; i < positions.length; i++) {
                     positions[i].off("click", positionClick[i]);
                 };
+                $(enPassant1).off("click", getEnPassant1);
+                $(enPassant2).off("click", getEnPassant2);
                 for (let i = 0; i < otherPieces.length; i++) {
                     $(pawn.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
                 };
             });
         };
-        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvir mieux les supprimer par la suite
+        // Ajoute tous les événéments liés à la fonction otherPiecesClick dans une liste pour pouvoir mieux les supprimer par la suite
         for (let k = 0; k < otherPieces.length; k++) {
             otherPiecesClick.push(() => {
                 otherPiecesClicked = true;
@@ -970,6 +1026,35 @@ class Pawn {
             });
         };
 
+
+        getEnPassant1 = () => {
+            newPos = $(enPassant1);
+            clicked = true;
+            console.log("(EN PASSANT) New position clicked :", newPos.attr("id"), clicked);
+            for (let i = 0; i < positions.length; i++) {
+                positions[i].off("click", positionClick[i]);
+            };
+            $(enPassant1).off("click", getEnPassant1);
+            $(enPassant2).off("click", getEnPassant2);
+            for (let i = 0; i < otherPieces.length; i++) {
+                $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+            };
+        };
+        getEnPassant2 = () => {
+            newPos = $(enPassant2);
+            clicked = true;
+            console.log("(EN PASSANT) New position clicked :", newPos.attr("id"), clicked);
+            for (let i = 0; i < positions.length; i++) {
+                positions[i].off("click", positionClick[i]);
+            };
+            $(enPassant1).off("click", getEnPassant1);
+            $(enPassant2).off("click", getEnPassant2);
+            for (let i = 0; i < otherPieces.length; i++) {
+                $(king.getID(otherPieces[i])).off('click', otherPiecesClick[i]);
+            };
+        };
+
+
         // Ajoute les événements liés à otherPiecesClick sur les cases vides
         for (let k = 0; k < otherPieces.length; k++) {
             $(pawn.getID(otherPieces[k])).on('click', otherPiecesClick[k]);
@@ -979,38 +1064,82 @@ class Pawn {
             positions[k].on("click", positionClick[k]);
         };
 
+        $(enPassant1).on("click", getEnPassant1);
+        $(enPassant2).on("click", getEnPassant2);
+        if (enPassant1Piece != undefined) {
+            $(enPassant1).html(pawn.ball)
+        } else if (enPassant2Piece != undefined) {
+            $(enPassant2).html(pawn.ball);
+        };
+
+
         // Fonction qui attends le click sur une case afin de bouger la pièce si la case est valide
         function move() {
             // console.log("ID :",id);
             // console.log("myPiece._actualPos :",myPiece._actualPos);
             if (clicked) {
                 console.log("Valid position clicked ! Move to : ", newPos.attr("id"));
-                if (pawn.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
-                    pawn.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
-                    newPos.off();
-                }
-                $(newPos).html("");
-                $(myPiece._actualPos).children().appendTo(newPos);
-                // Clear tous les évents sur les pièces blanches
-                // Mises à jours des données :
-                $(myPiece._actualPos).off("click", myPiece.onClick);
-                myPiece._actualPos = "#" + newPos.attr("id");
-                myPiece._count++;
+                if (enPassant1 == king.getID(newPos.attr("id"))) {
+                    // Clear les cases
+                    $(enPassant1).html('');
+                    $(enPassant1Piece.__actualPos).html('');
+                    // Téléporte les pièces sur les cases
+                    $(myPiece._actualPos).children().appendTo(enPassant1);
+                    // Maj des données
+                    myPiece._actualPos = enPassant1;
+                    myPiece._count++;
+                } else if (enPassant2 == king.getID(newPos.attr("id"))) {
+                    // Clear les cases
+                    $(enPassant2).html('');
+                    $(enPassant2Piece._actualPos).html('');
+                    // Téléporte les pièces sur les cases
+                    $(myPiece._actualPos).children().appendTo(enPassant2);
+                    // Maj des données
+                    myPiece._actualPos = enPassant2;
+                    myPiece._count++;
+                } else {
+                    if (pawn.displayPiece("#" + newPos.attr("id"), allPieces) != undefined) {
+                        pawn.displayPiece("#" + newPos.attr("id"), allPieces)._actualPos = "0";
+                        newPos.off();
+                    };
+                    $(newPos).html("");
+                    $(myPiece._actualPos).children().appendTo(newPos);
+
+                    // Mises à jours des données :
+                    $(myPiece._actualPos).off("click", myPiece.onClick);
+                    myPiece._actualPos = "#" + newPos.attr("id");
+                    myPiece._count++;
+                };
+
+                // Promotion en dame
                 if (myPiece._actualPos[2] == 8 && myPiece._color == "white") {
                     myPiece._promoted = true;
                     $(myPiece._actualPos).html('<img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/wq.png" alt="white queen">')
-                    myPiece._name = "Queen";
+                    var queen =new Queen(myPiece._color,myPiece._actualPos);
+                    whitePieces.push(queen);
+                    allPieces.push(queen);
+                    myPiece._actualPos="0";
+                    x[0]=new Queen(myPiece._color,myPiece._actualPos);
                 } else if (myPiece._actualPos[2] == 1 && myPiece._color == "black") {
                     myPiece._promoted = true;
                     $(myPiece._actualPos).html('<img src="//images.chesscomfiles.com/chess-themes/pieces/neo/150/bq.png" alt="black queen">')
-                    myPiece._name = "Queen";
+                    var queen =new Queen(myPiece._color,myPiece._actualPos);
+                    blackPieces.push(queen);
+                    allPieces.push(queen);
+                    myPiece._actualPos="0";
                 };
+
+                // Autres mises à jours de données
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
                     newGame._color = "b";
 
                     pawn.removeEvents("white", blackPieces, whitePieces);
                     pawn.addEvents("black", blackPieces, whitePieces);
+
+                    if (myPiece._count == 1 && myPiece._actualPos[2] == 4) {
+                        myPiece._enPassant = true;
+                    };
                 } else {
                     $("h2>span").html("blancs");
                     newGame._color = "w";
@@ -1018,9 +1147,11 @@ class Pawn {
 
                     pawn.removeEvents("black", blackPieces, whitePieces);
                     pawn.addEvents("white", blackPieces, whitePieces);
+
+                    if (myPiece._count == 1 && myPiece._actualPos[2] == 5) {
+                        myPiece._enPassant = true;
+                    };
                 };
-
-
                 // Conclusions :
                 pawn.removeBalls(chessBoard);
                 console.log("Piece updated :")
@@ -1076,10 +1207,12 @@ let Bf = new Bishop("white", "#F1");
 let Kd = new King("white", "#D1");
 let Qe = new Queen("white", "#E1");
 
-const blackPieces = [ra, rh, kb, kg, bc, bf, kd, qe, pa, pb, pc, pd, pe, pf, pg, ph];
-const whitePieces = [Ra, Rh, Kb, Kg, Bc, Bf, Kd, Qe, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
+let blackPieces = [ra, rh, kb, kg, bc, bf, kd, qe, pa, pb, pc, pd, pe, pf, pg, ph];
+let whitePieces = [Ra, Rh, Kb, Kg, Bc, Bf, Kd, Qe, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
+const whitePawns = [Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
+const blackPawns = [pa, pb, pc, pd, pe, pf, pg, ph];
 const pawns = [pa, pb, pc, pd, pe, pf, pg, ph, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
-const allPieces = blackPieces.concat(whitePieces);
+let allPieces = blackPieces.concat(whitePieces);
 $(Pa._actualPos).on('click', Pa.onClick);
 $(Pb._actualPos).on('click', Pb.onClick);
 $(Pc._actualPos).on('click', Pc.onClick);
