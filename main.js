@@ -150,14 +150,14 @@ class Knight {
                 myPiece._count++;
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
-                    newGame._color = "b";
+                    chess._color = "b";
 
                     knight.removeEvents("white", blackPieces, whitePieces);
                     knight.addEvents("black", blackPieces, whitePieces);
                 } else {
                     $("h2>span").html("blancs");
-                    newGame._color = "w";
-                    newGame._fullMove++;
+                    chess._color = "w";
+                    chess._fullMove++;
 
                     knight.removeEvents("black", blackPieces, whitePieces);
                     knight.addEvents("white", blackPieces, whitePieces);
@@ -166,9 +166,7 @@ class Knight {
 
                 // Conclusions :
                 knight.removeBalls(chessBoard);
-                console.log("Piece updated :")
-                console.table(myPiece);
-                console.log("FEN updated :", newGame.getFen());
+                console.log("FEN updated :", chess.getFen());
                 clicked = false;
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
@@ -291,14 +289,14 @@ class Rook {
                 myPiece._count++;
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
-                    newGame._color = "b";
+                    chess._color = "b";
 
                     rook.removeEvents("white", blackPieces, whitePieces);
                     rook.addEvents("black", blackPieces, whitePieces);
                 } else {
                     $("h2>span").html("blancs");
-                    newGame._color = "w";
-                    newGame._fullMove++;
+                    chess._color = "w";
+                    chess._fullMove++;
 
                     rook.removeEvents("black", blackPieces, whitePieces);
                     rook.addEvents("white", blackPieces, whitePieces);
@@ -307,9 +305,7 @@ class Rook {
 
                 // Conclusions :
                 rook.removeBalls(chessBoard);
-                console.log("Piece updated :")
-                console.table(myPiece);
-                console.log("FEN updated :", newGame.getFen());
+                console.log("FEN updated :", chess.getFen());
                 clicked = false;
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
@@ -432,14 +428,14 @@ class Queen {
                 myPiece._count++;
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
-                    newGame._color = "b";
+                    chess._color = "b";
 
                     queen.removeEvents("white", blackPieces, whitePieces);
                     queen.addEvents("black", blackPieces, whitePieces);
                 } else {
                     $("h2>span").html("blancs");
-                    newGame._color = "w";
-                    newGame._fullMove++;
+                    chess._color = "w";
+                    chess._fullMove++;
 
                     queen.removeEvents("black", blackPieces, whitePieces);
                     queen.addEvents("white", blackPieces, whitePieces);
@@ -450,7 +446,7 @@ class Queen {
                 queen.removeBalls(chessBoard);
                 console.log("Piece updated :")
                 console.table(myPiece);
-                console.log("FEN updated :", newGame.getFen());
+                console.log("FEN updated :", chess.getFen());
                 clicked = false;
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
@@ -466,11 +462,11 @@ class Queen {
     }
 };
 class King {
-    constructor(color, actualPos, count = 0) {
+    constructor(color, actualPos) {
         this._color = color,
             this._name = "King",
             this._actualPos = actualPos,
-            this._count = count
+            this._count = 0
     }
     getHTML() {
         if (this._actualPos == "0") {
@@ -496,21 +492,23 @@ class King {
         console.table(myPiece);
 
         // Initialisation roc
+        // ! roc : case d'arrivée du roi
+        // ! between : case entre le roi et sa case d'arrivée
         let roc1 = undefined;
         let between1 = undefined;
         let roc2 = undefined;
         let between2 = undefined;
         // Roc blanc
         if (myPiece._color == "white") {
-            roc1 = "#B1";
-            between1 = "#C1"
-            roc2 = "#F1";
-            between2 = "#E1";
+            roc1 = "#G1";
+            between1 = "#F1"
+            roc2 = "#C1";
+            between2 = "#D1";
         } else { // Roc noir
-            roc1 = "#F8";
-            between1 = "#E8";
-            roc2 = "#B8";
-            between2 = "#C8";
+            roc1 = "#C8";
+            between1 = "#D8";
+            roc2 = "#G8";
+            between2 = "#F8";
         };
         // Si il y a une pièce entre le roi et la tour alors on ne peut pas roquer
         if (king.displayPiece(roc1, allPieces) != undefined || king.displayPiece(between1, allPieces) != undefined) {
@@ -522,11 +520,11 @@ class King {
             between2 = undefined;
         };
         if (myPiece._color == "white") {
-            if (king.displayPiece("#G1", allPieces) != undefined) {
+            if (king.displayPiece("#B1", allPieces) != undefined) {
                 roc2 = undefined;
             };
         } else {
-            if (king.displayPiece("#G8", allPieces) != undefined) {
+            if (king.displayPiece("#B8", allPieces) != undefined) {
                 roc1 = undefined;
             };
         };
@@ -628,18 +626,20 @@ class King {
         // Ajoute les événements getRoc1 et getRoc2 sur les cases roc1 et roc2
         $(roc1).on("click", getRoc1);
         $(roc2).on("click", getRoc2);
+
+        // ! S'assure que les tours n'ont pas bougées
         if (myPiece._color == "white") {
-            if (king.displayPiece("#A1", allPieces)._count == 0) {
+            if (king.displayPiece("#H1", allPieces)._count == 0) {
                 $(roc1).html(king.ball);
             }
-            if (king.displayPiece("#H1", allPieces)._count == 0) {
+            if (king.displayPiece("#A1", allPieces)._count == 0) {
                 $(roc2).html(king.ball);
             };
         } else {
-            if (king.displayPiece("#H8", allPieces)._count == 0) {
+            if (king.displayPiece("#A8", allPieces)._count == 0) {
                 $(roc1).html(king.ball);
             }
-            if (king.displayPiece("#A8", allPieces)._count == 0) {
+            if (king.displayPiece("#H8", allPieces)._count == 0) {
                 $(roc2).html(king.ball);
             };
         };
@@ -650,50 +650,54 @@ class King {
 
                 // ! Gestion du roc !
                 if (king.getID(newPos.attr("id")) == roc1) {
-                    if (myPiece._color == "white" && king.displayPiece("#A1", allPieces)._count == 0) {
+                    if (myPiece._color == "white" && king.displayPiece("#H1", allPieces)._count == 0 && myPiece._count==0) {
                         // Clear les cases
                         $(roc1).html('');
                         $(between1).html('');
                         // Téléporte les pièces sur les cases
                         $(myPiece._actualPos).children().appendTo(roc1);
-                        $("#A1").children().appendTo($(between1))
+                        $("#H1").children().appendTo($(between1))
                         // Maj des données
-                        king.displayPiece("#A1", allPieces)._actualPos = between1;
+                        king.displayPiece("#H1", allPieces)._actualPos = between1;
+                        king.displayPiece("#H1", allPieces)._count++;
                         myPiece._actualPos = roc1;
                         myPiece._count++;
-                    } else if (myPiece._color == "black" && king.displayPiece("#H8", allPieces)._count == 0) {
+                    } else if (myPiece._color == "black" && king.displayPiece("#A8", allPieces)._count == 0 && myPiece._count==0) {
                         // Clear les cases
                         $(roc1).html('');
                         $(between1).html('');
                         // Téléporte les pièces sur les cases
                         $(myPiece._actualPos).children().appendTo(roc1);
-                        $("#H8").children().appendTo($(between1))
+                        $("#A8").children().appendTo($(between1))
                         // Maj des données
-                        king.displayPiece("#H8", allPieces)._actualPos = between1;
+                        king.displayPiece("#A8", allPieces)._actualPos = between1;
+                        king.displayPiece("#A8", allPieces)._count++;
                         myPiece._actualPos = roc1;
                         myPiece._count++;
                     };
                 } else if (king.getID(newPos.attr("id")) == roc2) {
-                    if (myPiece._color == "white" && king.displayPiece("#H1", allPieces)._count == 0) {
+                    if (myPiece._color == "white" && king.displayPiece("#A1", allPieces)._count == 0 && myPiece._count==0) {
                         // Clear les cases
                         $(roc2).html('');
                         $(between2).html('');
                         // Téléporte les pièces sur les cases
                         $(myPiece._actualPos).children().appendTo(roc2);
-                        $("#H1").children().appendTo($(between2))
+                        $("#A1").children().appendTo($(between2))
                         // Maj des données
-                        king.displayPiece("#H1", allPieces)._actualPos = between2;
+                        king.displayPiece("#A1", allPieces)._actualPos = between2;
+                        king.displayPiece("#A1", allPieces)._count++;
                         myPiece._actualPos = roc2;
                         myPiece._count++;
-                    } else if (myPiece._color == "black" && king.displayPiece("#H8", allPieces)._count == 0) {
+                    } else if (myPiece._color == "black" && king.displayPiece("#H8", allPieces)._count == 0 && myPiece._count==0) {
                         // Clear les cases
                         $(roc2).html('');
                         $(between2).html('');
                         // Téléporte les pièces sur les cases
                         $(myPiece._actualPos).children().appendTo(roc2);
-                        $("#A8").children().appendTo($(between2))
+                        $("#H8").children().appendTo($(between2))
                         // Maj des données
-                        king.displayPiece("#A8", allPieces)._actualPos = between2;
+                        king.displayPiece("#H8", allPieces)._actualPos = between2;
+                        king.displayPiece("#H8", allPieces)._count++;
                         myPiece._actualPos = roc2;
                         myPiece._count++;
                     };
@@ -712,17 +716,17 @@ class King {
                     myPiece._actualPos = "#" + newPos.attr("id");
                     myPiece._count++;
                     console.log("END MOVE :")
-                }
+                };
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
-                    newGame._color = "b";
+                    chess._color = "b";
 
                     king.removeEvents("white", blackPieces, whitePieces);
                     king.addEvents("black", blackPieces, whitePieces);
                 } else {
                     $("h2>span").html("blancs");
-                    newGame._color = "w";
-                    newGame._fullMove++;
+                    chess._color = "w";
+                    chess._fullMove++;
 
                     king.removeEvents("black", blackPieces, whitePieces);
                     king.addEvents("white", blackPieces, whitePieces);
@@ -734,7 +738,7 @@ class King {
                 // console.log("Piece updated :")
                 // console.table(myPiece);
                 clicked = false;
-                console.log("FEN updated :", newGame.getFen());
+                console.log("FEN updated :", chess.getFen());
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
             } else {
@@ -856,14 +860,14 @@ class Bishop {
                 myPiece._count++;
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
-                    newGame._color = "b";
+                    chess._color = "b";
 
                     bishop.removeEvents("white", blackPieces, whitePieces);
                     bishop.addEvents("black", blackPieces, whitePieces);
                 } else {
                     $("h2>span").html("blancs");
-                    newGame._color = "w";
-                    newGame._fullMove++;
+                    chess._color = "w";
+                    chess._fullMove++;
 
                     bishop.removeEvents("black", blackPieces, whitePieces);
                     bishop.addEvents("white", blackPieces, whitePieces);
@@ -872,9 +876,7 @@ class Bishop {
 
                 // Conclusions :
                 bishop.removeBalls(chessBoard);
-                console.log("Piece updated :")
-                console.table(myPiece);
-                console.log("FEN updated :", newGame.getFen());
+                console.log("FEN updated :", chess.getFen());
                 clicked = false;
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
@@ -1132,7 +1134,7 @@ class Pawn {
                 // Autres mises à jours de données
                 if (myPiece._color == "white") {
                     $("h2>span").html("noirs");
-                    newGame._color = "b";
+                    chess._color = "b";
 
                     pawn.removeEvents("white", blackPieces, whitePieces);
                     pawn.addEvents("black", blackPieces, whitePieces);
@@ -1142,8 +1144,8 @@ class Pawn {
                     };
                 } else {
                     $("h2>span").html("blancs");
-                    newGame._color = "w";
-                    newGame._fullMove++;
+                    chess._color = "w";
+                    chess._fullMove++;
 
                     pawn.removeEvents("black", blackPieces, whitePieces);
                     pawn.addEvents("white", blackPieces, whitePieces);
@@ -1154,9 +1156,7 @@ class Pawn {
                 };
                 // Conclusions :
                 pawn.removeBalls(chessBoard);
-                console.log("Piece updated :")
-                console.table(myPiece);
-                console.log("FEN updated :", newGame.getFen());
+                console.log("FEN updated :", chess.getFen());
                 clicked = false;
             } else if (otherPiecesClicked) {
                 otherPiecesClicked = false;
@@ -1172,7 +1172,7 @@ class Pawn {
     }
 };
 
-const newGame = new ChessGame();
+const chess = new ChessGame();
 let pa = new Pawn("black", "#A7");
 let pb = new Pawn("black", "#B7");
 let pc = new Pawn("black", "#C7");
@@ -1187,8 +1187,8 @@ let kb = new Knight("black", "#B8");
 let kg = new Knight("black", "#G8");
 let bc = new Bishop("black", "#C8");
 let bf = new Bishop("black", "#F8");
-let kd = new King("black", "#D8");
-let qe = new Queen("black", "#E8");
+let kd = new King("black", "#E8");
+let qe = new Queen("black", "#D8");
 
 let Pa = new Pawn("white", "#A2");
 let Pb = new Pawn("white", "#B2");
@@ -1204,14 +1204,13 @@ let Kb = new Knight("white", "#B1");
 let Kg = new Knight("white", "#G1");
 let Bc = new Bishop("white", "#C1");
 let Bf = new Bishop("white", "#F1");
-let Kd = new King("white", "#D1");
-let Qe = new Queen("white", "#E1");
+let Kd = new King("white", "#E1");
+let Qe = new Queen("white", "#D1");
 
 let blackPieces = [ra, rh, kb, kg, bc, bf, kd, qe, pa, pb, pc, pd, pe, pf, pg, ph];
 let whitePieces = [Ra, Rh, Kb, Kg, Bc, Bf, Kd, Qe, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
 const whitePawns = [Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
 const blackPawns = [pa, pb, pc, pd, pe, pf, pg, ph];
-const pawns = [pa, pb, pc, pd, pe, pf, pg, ph, Pa, Pb, Pc, Pd, Pe, Pf, Pg, Ph];
 let allPieces = blackPieces.concat(whitePieces);
 $(Pa._actualPos).on('click', Pa.onClick);
 $(Pb._actualPos).on('click', Pb.onClick);
